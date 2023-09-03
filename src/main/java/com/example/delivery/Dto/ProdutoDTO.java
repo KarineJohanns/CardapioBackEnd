@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record ProdutoDTO(
 
+        Long id,
         @NotBlank
         String nome,
         String descricao,
@@ -13,19 +14,19 @@ public record ProdutoDTO(
         String nomeCategoria
 ) {
 
-        public String getNomeCategoria() {
-             return this.nomeCategoria();
-        }
+    public String getNomeCategoria() {
+        return this.nomeCategoria();
+    }
 
     public String getDescricao() {
-            return this.descricao();
+        return this.descricao();
     }
 
     public String getNome() {
-            return this.nome();
+        return this.nome();
     }
 
     public Integer getPrecoEmCentavos() {
-            return this.precoEmCentavos();
+        return this.precoEmCentavos();
     }
 }

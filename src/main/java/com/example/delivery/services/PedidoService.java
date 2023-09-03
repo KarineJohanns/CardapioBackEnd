@@ -1,8 +1,8 @@
 package com.example.delivery.services;
 
 import com.example.delivery.Dto.PedidoDTO;
-import com.example.delivery.exceptions.NotFoundException;
 import com.example.delivery.models.ClienteModel;
+import com.example.delivery.models.ItemPedidoModel;
 import com.example.delivery.models.PedidoModel;
 import com.example.delivery.repositories.ClienteRepository;
 import com.example.delivery.repositories.ItemPedidoRepository;
@@ -49,8 +49,29 @@ public class PedidoService {
         pedidoModel.setTelefone(pedidoDTO.getTelefone());
         pedidoModel.setEndereco(pedidoDTO.getEndereco());
 
+        Integer totalPagamento = 0;
+        for (ItemPedidoModel itemPedido : pedidoDTO.getItensPedido()) {
+            Integer quantidade = itemPedido.getQuantidate();
+            Integer precoUnitario = itemPedido.getValorUnitario();
+            Integer totalItem = quantidade * precoUnitario;
+            itemPedido.setValorTotal(totalItem);
+        }
 
-        return pedidoRepository.save(pedidoModel);
+        for (ItemPedidoModel itemPedido : pedidoDTO.getItensPedido()) {
+            totalPagamento += itemPedido.getValorTotal();
+        }
+        pedidoModel.setTotalPagamento(totalPagamento);
+
+        pedidoModel = pedidoRepository.save(pedidoModel);
+
+        for (ItemPedidoModel itemPedido : pedidoDTO.getItensPedido()) {
+            itemPedido.setPedido(pedidoModel);
+            itemPedidoRepository.save(itemPedido);
+        }
+        pedidoModel.setItensPedido(pedidoDTO.getItensPedido());
+
+        return pedidoModel;
+
     }
 
     public List<PedidoModel> listarPedidos() {
@@ -58,5 +79,9 @@ public class PedidoService {
         return pedidos;
     }
 
-}
+    public PedidoModel getPedidoById(Long id) {
+        return pedidoRepository.findById(id)
+                .orElse(null);
+    }
 
+}

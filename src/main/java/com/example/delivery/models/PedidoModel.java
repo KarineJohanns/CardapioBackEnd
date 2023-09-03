@@ -34,7 +34,7 @@ public class PedidoModel implements Serializable {
     private LocalDateTime dataHoraCriacao;
 
     @Column(name = "total_pagamento")
-    private Long totalPagamento;
+    private Integer totalPagamento;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemPedidoModel> itensPedido;

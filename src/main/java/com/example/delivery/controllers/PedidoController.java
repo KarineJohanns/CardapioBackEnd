@@ -35,5 +35,15 @@ public class PedidoController {
         List<PedidoModel> listaDePedidos = pedidoService.listarPedidos();
         return ResponseEntity.status((HttpStatus.OK)).body(listaDePedidos);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PedidoModel> getPedidoById(@PathVariable Long id) {
+        PedidoModel pedido = pedidoService.getPedidoById(id);
+
+        if (pedido == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(pedido);
+    }
 }
 
