@@ -1,11 +1,13 @@
 package com.example.delivery.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "categorias")
@@ -17,6 +19,10 @@ public class CategoriaModel implements Serializable {
     private Long id;
 
     private String nome;
+
+    @OneToMany(mappedBy = "nomeCategoria", fetch = FetchType.EAGER)
+
+    private List<ProdutoModel> produtos;
 
 
     public Long getId() {
@@ -36,6 +42,11 @@ public class CategoriaModel implements Serializable {
     }
 
 
+    public List<ProdutoModel> getProdutos() {
+        return produtos;
+    }
 
-
+    public void setProdutos(List<ProdutoModel> produtos) {
+        this.produtos = produtos;
+    }
 }

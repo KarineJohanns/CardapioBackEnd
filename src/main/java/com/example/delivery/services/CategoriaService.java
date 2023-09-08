@@ -3,6 +3,7 @@ package com.example.delivery.services;
 import com.example.delivery.Dto.CategoriaDTO;
 import com.example.delivery.exceptions.NotFoundException;
 import com.example.delivery.models.CategoriaModel;
+import com.example.delivery.models.ProdutoModel;
 import com.example.delivery.repositories.CategoriaRepository;
 
 import org.modelmapper.ModelMapper;
@@ -19,10 +20,12 @@ import java.util.stream.Collectors;
 public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public CategoriaService(CategoriaRepository categoriaRepository, ModelMapper modelMapper) {
         this.categoriaRepository = categoriaRepository;
+        this.modelMapper = modelMapper;
     }
 
     public CategoriaModel criarCategoria(CategoriaDTO categoriaDTO) {
@@ -57,6 +60,17 @@ public class CategoriaService {
         categoriaRepository.delete(categoriaApagada);
     }
 
+    public List<CategoriaModel> listarCategoriasComProdutos() {
+        List<CategoriaModel> categorias = categoriaRepository.findAll();
 
+        return categorias.stream()
+                .collect(Collectors.toList());
+    }
+
+    private CategoriaDTO convertToDTO(CategoriaModel categoria) {
+        List<ProdutoModel> produtos = categoria.getProdutos();
+        return new CategoriaDTO(categoria.getId(), categoria.getNome(), produtos);
+    }
 }
+
 

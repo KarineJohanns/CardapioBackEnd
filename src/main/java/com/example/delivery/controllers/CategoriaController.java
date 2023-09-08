@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categorias")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CategoriaController {
 
     private final CategoriaService categoriaService;
@@ -33,8 +32,8 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoriaModel>> listarCategorias() {
-        List<CategoriaModel> categorias = categoriaService.listarCategorias();
+    public ResponseEntity<List<CategoriaModel>> listarCategoriasComProdutos() {
+        List<CategoriaModel> categorias = categoriaService.listarCategoriasComProdutos();
         String mensagem = "Categoria listada com sucesso.";
         return ResponseEntity.status(HttpStatus.OK).header("Mensagem", mensagem).body(categorias);
     }

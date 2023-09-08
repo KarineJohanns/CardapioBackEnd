@@ -1,5 +1,6 @@
 package com.example.delivery.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,47 @@ public class ProdutoModel implements Serializable {
     private Integer precoEmCentavos;
     @ManyToOne
     @JoinColumn(name = "categoria_id")
+    @JsonIgnore
     private CategoriaModel nomeCategoria;
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public Integer getPrecoEmCentavos() {
+        return precoEmCentavos;
+    }
+
+    public void setPrecoEmCentavos(Integer precoEmCentavos) {
+        this.precoEmCentavos = precoEmCentavos;
+    }
+
+    public CategoriaModel getNomeCategoria() {
+        return nomeCategoria;
+    }
+
+    public void setNomeCategoria(CategoriaModel nomeCategoria) {
+        this.nomeCategoria = nomeCategoria;
+    }
 }
