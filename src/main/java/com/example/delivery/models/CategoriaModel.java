@@ -21,7 +21,6 @@ public class CategoriaModel implements Serializable {
     private String nome;
 
     @OneToMany(mappedBy = "nomeCategoria", fetch = FetchType.EAGER)
-
     private List<ProdutoModel> produtos;
 
 
@@ -40,7 +39,6 @@ public class CategoriaModel implements Serializable {
     public void setNome(String nome) {
         this.nome = nome;
     }
-
 
     public List<ProdutoModel> getProdutos() {
         return produtos;

@@ -1,35 +1,36 @@
 package com.example.delivery.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 @Data
 @Entity
 @Table(name = "produtos")
-@NoArgsConstructor
-@AllArgsConstructor
-public class ProdutoModel implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class ProdutoModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nome;
-
     private String descricao;
+    private Integer preco;
 
-    private Integer precoEmCentavos;
     @ManyToOne
     @JoinColumn(name = "categoria_id")
-    @JsonIgnore
     private CategoriaModel nomeCategoria;
 
+    // Construtores, getters e setters
+
+    public ProdutoModel() {
+    }
+
+    public ProdutoModel(String nome, String descricao, Integer preco, CategoriaModel nomeCategoria) {
+        this.nome = nome;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.nomeCategoria = nomeCategoria;
+    }
 
     public Long getId() {
         return id;
@@ -55,12 +56,12 @@ public class ProdutoModel implements Serializable {
         this.descricao = descricao;
     }
 
-    public Integer getPrecoEmCentavos() {
-        return precoEmCentavos;
+    public Integer getPreco() {
+        return preco;
     }
 
-    public void setPrecoEmCentavos(Integer precoEmCentavos) {
-        this.precoEmCentavos = precoEmCentavos;
+    public void setPreco(Integer preco) {
+        this.preco = preco;
     }
 
     public CategoriaModel getNomeCategoria() {

@@ -28,48 +28,57 @@ public class CategoriaService {
         this.modelMapper = modelMapper;
     }
 
-    public CategoriaModel criarCategoria(CategoriaDTO categoriaDTO) {
-        CategoriaModel categoriaModel = new CategoriaModel();
-
-        categoriaModel.setNome(categoriaDTO.nome());
-
-        return categoriaRepository.save(categoriaModel);
+    public CategoriaDTO mapToDTO(CategoriaModel categoriaModel) {
+        return modelMapper.map(categoriaModel, CategoriaDTO.class);
     }
 
-    public List<CategoriaModel> listarCategorias() {
+    public CategoriaDTO criarCategoria(CategoriaDTO categoriaDTO) {
+        CategoriaModel categoriaModel = modelMapper.map(categoriaDTO, CategoriaModel.class);
+
+        categoriaModel = categoriaRepository.save(categoriaModel);
+
+        return modelMapper.map(categoriaModel, CategoriaDTO.class);
+    }
+
+    public List<CategoriaDTO> listarCategorias() {
         List<CategoriaModel> categorias = categoriaRepository.findAll();
-        return categorias;
+        return categorias.stream()
+                .map(categoria -> modelMapper.map(categoria, CategoriaDTO.class))
+                .collect(Collectors.toList());
     }
 
-    public CategoriaModel listarCategoriaId(Long id) {
-        return categoriaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Categoria", "ID" + id));
+    public CategoriaDTO listarCategoriaPorId(Long id) {
+        CategoriaModel categoriaModel = categoriaRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Categoria", "ID " + id));
+
+        return modelMapper.map(categoriaModel, CategoriaDTO.class);
     }
 
-    public CategoriaModel alterarCategoria(Long id, CategoriaDTO categoriaDTO) {
+    public CategoriaDTO alterarCategoria(Long id, CategoriaDTO categoriaDTO) {
         CategoriaModel categoriaExistente = categoriaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Categoria", "ID" + id));
-        categoriaExistente.setNome(categoriaDTO.nome());
+                .orElseThrow(() -> new NotFoundException("Categoria", "ID " + id));
 
-        return categoriaRepository.save(categoriaExistente);
+        categoriaExistente.setNome(categoriaDTO.getNomeCategoria());
+
+        categoriaExistente = categoriaRepository.save(categoriaExistente);
+
+        return modelMapper.map(categoriaExistente, CategoriaDTO.class);
     }
 
     public void apagarCategoria(Long id) {
         CategoriaModel categoriaApagada = categoriaRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Produto", "ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Categoria", "ID " + id));
+
         categoriaRepository.delete(categoriaApagada);
     }
 
-    public List<CategoriaModel> listarCategoriasComProdutos() {
-        List<CategoriaModel> categorias = categoriaRepository.findAll();
-
-        return categorias.stream()
-                .collect(Collectors.toList());
+    public CategoriaModel listarCategoriaId(Long id) {
+        return categoriaRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Categoria", "ID " + id));
     }
 
-    private CategoriaDTO convertToDTO(CategoriaModel categoria) {
-        List<ProdutoModel> produtos = categoria.getProdutos();
-        return new CategoriaDTO(categoria.getId(), categoria.getNome(), produtos);
+    public CategoriaModel buscarCategoriaPorNome(String nomeCategoria) {
+        return categoriaRepository.findByNome(nomeCategoria);
     }
 }
 

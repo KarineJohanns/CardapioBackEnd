@@ -22,38 +22,38 @@ public class ProdutoController {
     }
 
     @PostMapping
-    public ResponseEntity<ProdutoModel> criarProduto(@RequestBody @Valid ProdutoDTO produtoDTO) {
-        ProdutoModel produtoCriado = produtoService.criarProduto(produtoDTO);
-        String mensagem = "Produto criado com sucesso.";
+    public ResponseEntity<ProdutoDTO> criarProduto(@RequestBody @Valid ProdutoDTO produtoDTO) {
+        ProdutoDTO produtoCriado = produtoService.criarProduto(produtoDTO);
+        String mensagem = "Produto " + produtoCriado.getNome() + " criado com sucesso.";
         return ResponseEntity.status(HttpStatus.CREATED).header("Mensagem", mensagem).body(produtoCriado);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProdutoModel>> listarProdutos() {
-        List<ProdutoModel> produtos = produtoService.listarProdutos();
-        return ResponseEntity.status(HttpStatus.OK).body(produtos);
+    public ResponseEntity<List<ProdutoDTO>> listarProdutos() {
+        List<ProdutoDTO> produtos = produtoService.listarProdutos();
+        String mensagem = "Produtos listados com sucesso.";
+        return ResponseEntity.status(HttpStatus.OK).header("Mensagem", mensagem).body(produtos);
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<ProdutoModel> listarProdutoId(@PathVariable Long id) {
-        ProdutoModel produtoId = produtoService.listarProdutoId(id);
-        return ResponseEntity.status(HttpStatus.OK).body(produtoId);
+    @GetMapping("/{id}")
+    public ResponseEntity<ProdutoDTO> listarProdutoId(@PathVariable Long id) {
+        ProdutoDTO produto = produtoService.listarProdutoId(id);
+        String mensagem = "Produto listado com sucesso.";
+        return ResponseEntity.status(HttpStatus.OK).header("Mensagem", mensagem).body(produto);
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> apagarProduto(@PathVariable Long id) {
         produtoService.apagarProduto(id);
-        String mensagem = "Produto  " + id + " apagado com sucesso.";
+        String mensagem = "Produto apagado com sucesso.";
         return ResponseEntity.noContent().header("Mensagem", mensagem).build();
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<ProdutoModel> alterarProduto(
-            @PathVariable Long id,
-            @RequestBody ProdutoDTO produtoDTO) {
-        ProdutoModel produtoAlterado = produtoService.alterarProduto(id, produtoDTO);
-        String mensagem = "Produto  " + id + " alterado com sucesso.";
-        return ResponseEntity.status(HttpStatus.OK).body(produtoAlterado);
+    @PutMapping("/{id}")
+    public ResponseEntity<ProdutoDTO> alterarProduto(@PathVariable Long id, @RequestBody ProdutoDTO produtoDTO) {
+        ProdutoDTO produtoAlterado = produtoService.alterarProduto(id, produtoDTO);
+        String mensagem = "Produto alterado com sucesso.";
+        return ResponseEntity.status(HttpStatus.OK).header("Mensagem", mensagem).body(produtoAlterado);
     }
 }
 

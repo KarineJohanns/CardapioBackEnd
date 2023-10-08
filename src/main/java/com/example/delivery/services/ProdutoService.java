@@ -1,5 +1,6 @@
 package com.example.delivery.services;
 
+import com.example.delivery.Dto.CategoriaDTO;
 import com.example.delivery.Dto.ClienteDTO;
 import com.example.delivery.Dto.ProdutoDTO;
 import com.example.delivery.exceptions.NotFoundException;
@@ -13,70 +14,74 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
-    private final CategoriaRepository categoriaRepository;
+    private final CategoriaService categoriaService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public ProdutoService(ProdutoRepository produtoRepository, CategoriaRepository categoriaRepository, ModelMapper modelMapper) {
+    public ProdutoService(ProdutoRepository produtoRepository, CategoriaService categoriaService, ModelMapper modelMapper) {
         this.produtoRepository = produtoRepository;
-        this.categoriaRepository = categoriaRepository;
+        this.categoriaService = categoriaService;
         this.modelMapper = modelMapper;
     }
 
-    public ProdutoModel criarProduto(ProdutoDTO produtoDTO) {
-        CategoriaModel categoria = categoriaRepository.findByNome(produtoDTO.getNomeCategoria());
+    public ProdutoDTO criarProduto(ProdutoDTO produtoDTO) {
+        String nomeCategoria = produtoDTO.getNomeCategoria();
+        CategoriaModel categoria = categoriaService.buscarCategoriaPorNome(nomeCategoria);
 
-        if (categoria == null) {
-            throw new NotFoundException("Categoria", "Nome: " + produtoDTO.getNomeCategoria());
-        }
 
-        ProdutoModel produtoModel = new ProdutoModel();
-        produtoModel.setDescricao(produtoDTO.getDescricao());
-        produtoModel.setNome(produtoDTO.getNome());
-        produtoModel.setPrecoEmCentavos(produtoDTO.getPrecoEmCentavos());
-        produtoModel.setNomeCategoria(categoria);
+        ProdutoModel novoProduto = new ProdutoModel(
+                produtoDTO.getNome(),
+                produtoDTO.getDescricao(),
+                produtoDTO.getPreco(),
+                categoria
+        );
 
-        return produtoRepository.save(produtoModel);
+        ProdutoModel produtoCriado = produtoRepository.save(novoProduto);
+
+        return modelMapper.map(produtoCriado, ProdutoDTO.class);
     }
 
-    public List<ProdutoModel> listarProdutos() {
+    public List<ProdutoDTO> listarProdutos() {
         List<ProdutoModel> produtos = produtoRepository.findAll();
-        return produtos;
+        return produtos.stream()
+                .map(produtoModel -> modelMapper.map(produtoModel, ProdutoDTO.class))
+                .collect(Collectors.toList());
     }
 
-    public ProdutoModel listarProdutoId(Long id) {
-        return produtoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Produto", "ID" + id));
+    public ProdutoDTO listarProdutoId(Long id) {
+        ProdutoModel produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Produto", "ID " + id));
+        return modelMapper.map(produto, ProdutoDTO.class);
     }
 
     public void apagarProduto(Long id) {
         ProdutoModel produto = produtoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Produto", "ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Produto", "ID " + id));
 
         produtoRepository.delete(produto);
     }
 
-    public ProdutoModel alterarProduto(Long id, ProdutoDTO produtoDTO) {
-        CategoriaModel categoria = categoriaRepository.findByNome(produtoDTO.getNomeCategoria());
+    public ProdutoDTO alterarProduto(Long id, ProdutoDTO produtoDTO) {
+        ProdutoModel produtoExistente = produtoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Produto", "ID " + id));
+
+        String nomeCategoria = produtoDTO.getNomeCategoria();
+        CategoriaModel categoria = categoriaService.buscarCategoriaPorNome(nomeCategoria);
 
         if (categoria == null) {
-            throw new NotFoundException("Categoria", "Nome: " + produtoDTO.getNomeCategoria());
+            throw new NotFoundException("Categoria", "Nome '" + nomeCategoria + "' não encontrada.");
         }
-
-        ProdutoModel produtoExistente = produtoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Produto", "ID" + id));
-
-        produtoExistente.setDescricao(produtoDTO.getDescricao());
-        produtoExistente.setNome((produtoDTO.getNome()));
-        produtoExistente.setPrecoEmCentavos((produtoDTO.getPrecoEmCentavos()));
+        modelMapper.map(produtoDTO, produtoExistente);
         produtoExistente.setNomeCategoria(categoria);
+        ProdutoModel produtoAlterado = produtoRepository.save(produtoExistente);
 
-        return produtoRepository.save(produtoExistente);
+        return modelMapper.map(produtoAlterado, ProdutoDTO.class);
     }
 
 

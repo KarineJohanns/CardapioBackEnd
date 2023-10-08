@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -26,35 +27,35 @@ public class CategoriaController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoriaModel> criarCategoria(@RequestBody @Valid CategoriaDTO categoriaDTO) {
-        CategoriaModel categoriaCriada = categoriaService.criarCategoria(categoriaDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaCriada);
+    public ResponseEntity<CategoriaDTO> criarCategoria(@RequestBody @Valid CategoriaDTO categoriaDTO) {
+        CategoriaDTO categoriaCriada = categoriaService.criarCategoria(categoriaDTO);
+        String mensagem = "Categoria criada com sucesso.";
+        return ResponseEntity.status(HttpStatus.CREATED).header("Mensagem", mensagem).body(categoriaCriada);
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoriaModel>> listarCategoriasComProdutos() {
-        List<CategoriaModel> categorias = categoriaService.listarCategoriasComProdutos();
-        String mensagem = "Categoria listada com sucesso.";
-        return ResponseEntity.status(HttpStatus.OK).header("Mensagem", mensagem).body(categorias);
+    public ResponseEntity<List<CategoriaDTO>> listarCategorias() {
+        List<CategoriaDTO> categorias = categoriaService.listarCategorias();
+        return ResponseEntity.status(HttpStatus.OK).body(categorias);
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<CategoriaModel> listarCategoriaId(@PathVariable Long id) {
-        CategoriaModel categoria = categoriaService.listarCategoriaId(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoriaDTO> listarCategoriaId(@PathVariable Long id) {
+        CategoriaDTO categoria = categoriaService.listarCategoriaPorId(id);
         return ResponseEntity.status(HttpStatus.OK).body(categoria);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<CategoriaModel> alterarCategoria(@PathVariable Long id, @RequestBody CategoriaDTO categoriaDTO) {
-        CategoriaModel categoriaAlterada = categoriaService.alterarCategoria(id, categoriaDTO);
-        String mensagem = "Categoria " + categoriaAlterada.getNome() + " alterada com sucesso.";
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoriaDTO> alterarCategoria(@PathVariable Long id, @RequestBody CategoriaDTO categoriaDTO) {
+        CategoriaDTO categoriaAlterada = categoriaService.alterarCategoria(id, categoriaDTO);
+        String mensagem = "Categoria " + categoriaAlterada.getNomeCategoria() + " alterada com sucesso.";
         return ResponseEntity.status(HttpStatus.OK).header("Mensagem", mensagem).body(categoriaAlterada);
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> apagarCategoria(@PathVariable Long id) {
         categoriaService.apagarCategoria(id);
-        String mensagem = "Produto  " + id + " apagado com sucesso.";
+        String mensagem = "Categoria ID " + id + " apagada com sucesso.";
         return ResponseEntity.noContent().header("Mensagem", mensagem).build();
     }
 
